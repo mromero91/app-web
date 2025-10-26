@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   Users,
@@ -9,6 +9,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useUIStore } from '@stores/uiStore';
+import { authService } from '@services/api/auth';
+import { removeAuthData } from '@services/storage/tokenStorage';
 import auraLogo from '@assets/aura.svg';
 
 const navigation = [
@@ -24,6 +26,18 @@ export const Sidebar = () => {
     toggleSidebarCollapse,
   } = useUIStore();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      removeAuthData();
+      navigate('/login');
+    }
+  };
 
   return (
     <>
@@ -129,10 +143,11 @@ export const Sidebar = () => {
             className={`w-full flex items-center text-sm font-medium text-white/70 hover:bg-red-500/20 hover:text-red-300 rounded-xl transition-all duration-200 hover:transform hover:scale-105 ${
               sidebarCollapsed ? 'justify-center px-2 py-3' : 'px-4 py-3'
             }`}
-            title={sidebarCollapsed ? 'Cerrar Sesión' : ''}
+            title={sidebarCollapsed ? 'Close Session' : ''}
+            onClick={handleLogout}
           >
             <LogOut className={`h-5 w-5 ${sidebarCollapsed ? '' : 'mr-3'}`} />
-            {!sidebarCollapsed && 'Cerrar Sesión'}
+            {!sidebarCollapsed && 'Close Session'}
           </button>
         </div>
       </aside>
