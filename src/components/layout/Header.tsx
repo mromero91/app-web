@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Menu, X, User, LogOut } from 'lucide-react';
-import { useAuthStore } from '../../stores/authStore';
-import { useUIStore } from '../../stores/uiStore';
+import { useAuthStore } from '@stores/authStore';
+import { useUIStore } from '@stores/uiStore';
+import auraLogo from '@assets/aura.svg';
 
 export const Header = () => {
   const { user, logout } = useAuthStore();
@@ -11,7 +12,6 @@ export const Header = () => {
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo y botón sidebar */}
           <div className="flex items-center">
             <button
               onClick={toggleSidebar}
@@ -24,8 +24,8 @@ export const Header = () => {
               )}
             </button>
 
-            <Link to="/dashboard" className="ml-4">
-              <h1 className="text-xl font-bold text-gray-900">Aura</h1>
+            <Link to="/dashboard" className="ml-4 flex items-center">
+              <img src={auraLogo} alt="Aura" className="h-10 w-10" />
             </Link>
           </div>
 

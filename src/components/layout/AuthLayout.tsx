@@ -1,31 +1,25 @@
 import { Outlet } from 'react-router-dom';
-import { Header } from './Header';
 import { Sidebar } from './Sidebar';
-import { useUIStore } from '../../stores/uiStore';
+import { useUIStore } from '@stores/uiStore';
 
 export const AuthLayout = () => {
-  const { sidebarOpen, toggleSidebar } = useUIStore();
+  const { sidebarCollapsed } = useUIStore();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <Header />
+    <div className="min-h-screen bg-[#211A40]">
+      {/* Sidebar flotante */}
+      <Sidebar />
 
-      <div className="flex">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Contenido principal */}
-        <main
-          className={`flex-1 transition-all duration-300 ${
-            sidebarOpen ? 'ml-64' : 'ml-16'
-          }`}
-        >
-          <div className="p-6">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+      {/* Contenido principal con margen dinámico */}
+      <main
+        className={`min-h-screen transition-all duration-500 ease-out ${
+          sidebarCollapsed ? 'ml-20' : 'ml-80'
+        }`}
+      >
+        <div className="p-6 bg-white rounded-lg shadow min-h-screen">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 };

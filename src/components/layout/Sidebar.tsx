@@ -1,53 +1,158 @@
-// Sidebar para navegación lateral
-// Incluye: menú principal, submenús, colapso
-// Responsive: se oculta en mobile
-
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
-import { useUIStore } from '../../stores/uiStore';
+import {
+  Home,
+  Users,
+  LogOut,
+  Menu,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import { useUIStore } from '@stores/uiStore';
+import auraLogo from '@assets/aura.svg';
 
-const navigation = [];
+const navigation = [
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Usuarios', href: '/users', icon: Users },
+];
 
 export const Sidebar = () => {
-  const { sidebarOpen } = useUIStore();
+  const {
+    sidebarOpen,
+    sidebarCollapsed,
+    toggleSidebar,
+    toggleSidebarCollapse,
+  } = useUIStore();
   const location = useLocation();
 
   return (
-    <aside
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 lg:static lg:inset-0`}
-    >
-      <div className="flex flex-col h-full pt-16">
-        <nav className="flex-1 px-4 py-6 space-y-2">
+    <>
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+      <aside
+        className={`fixed top-4 left-4 bottom-4 z-50 bg-[#211A40]/95 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/10 transform transition-all duration-500 ease-out ${
+          sidebarCollapsed ? 'w-16' : 'w-72'
+        } ${
+          sidebarOpen
+            ? 'translate-x-0 opacity-100'
+            : '-translate-x-full opacity-0'
+        } lg:translate-x-0 lg:opacity-100`}
+        style={{
+          boxShadow:
+            '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+        }}
+      >
+        <div
+          className={`flex items-center border-b border-white/10 transition-all duration-300 ${
+            sidebarCollapsed ? 'justify-center p-4' : 'justify-between p-6'
+          }`}
+        >
+          <div className="flex items-center space-x-3">
+            <img src={auraLogo} alt="Aura" className="h-8 w-8" />
+            {!sidebarCollapsed && (
+              <span className="text-xl font-bold text-white transition-opacity duration-300">
+                Aura
+              </span>
+            )}
+          </div>
+          {!sidebarCollapsed && (
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={toggleSidebarCollapse}
+                className="hidden lg:flex p-2 rounded-lg hover:bg-white/10 transition-colors"
+                title="Contraer sidebar"
+              >
+                <ChevronLeft className="h-5 w-5 text-white" />
+              </button>
+              <button
+                onClick={toggleSidebar}
+                className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <nav
+          className={`flex-1 py-6 space-y-2 transition-all duration-300 ${
+            sidebarCollapsed ? 'px-2' : 'px-4'
+          }`}
+        >
           {navigation.map((item) => {
             const isActive = location.pathname === item.href;
             return (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`group flex items-center text-sm font-medium rounded-xl transition-all duration-200 ${
+                  sidebarCollapsed ? 'justify-center px-2 py-3' : 'px-4 py-3'
+                } ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'bg-white/20 text-white shadow-lg transform scale-105 border border-white/20'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white hover:transform hover:scale-105'
                 }`}
+                title={sidebarCollapsed ? item.name : ''}
               >
                 <item.icon
-                  className={`mr-3 h-5 w-5 ${
+                  className={`h-5 w-5 transition-colors ${
+                    sidebarCollapsed ? '' : 'mr-3'
+                  } ${
                     isActive
-                      ? 'text-blue-500'
-                      : 'text-gray-400 group-hover:text-gray-500'
+                      ? 'text-white'
+                      : 'text-white/60 group-hover:text-white'
                   }`}
                 />
-                <span className="truncate">{item.name}</span>
-                {isActive && (
-                  <ChevronRight className="ml-auto h-4 w-4 text-blue-500" />
+                {!sidebarCollapsed && (
+                  <>
+                    <span className="truncate ml-3">{item.name}</span>
+                    {isActive && (
+                      <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
+                    )}
+                  </>
                 )}
               </Link>
             );
           })}
         </nav>
-      </div>
-    </aside>
+
+        <div
+          className={`border-t border-white/10 transition-all duration-300 ${
+            sidebarCollapsed ? 'p-2' : 'p-4'
+          }`}
+        >
+          <button
+            className={`w-full flex items-center text-sm font-medium text-white/70 hover:bg-red-500/20 hover:text-red-300 rounded-xl transition-all duration-200 hover:transform hover:scale-105 ${
+              sidebarCollapsed ? 'justify-center px-2 py-3' : 'px-4 py-3'
+            }`}
+            title={sidebarCollapsed ? 'Cerrar Sesión' : ''}
+          >
+            <LogOut className={`h-5 w-5 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+            {!sidebarCollapsed && 'Cerrar Sesión'}
+          </button>
+        </div>
+      </aside>
+
+      <button
+        onClick={toggleSidebar}
+        className="fixed top-4 left-4 z-30 lg:hidden p-3 bg-[#211A40]/95 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 hover:bg-[#211A40] transition-all duration-200"
+      >
+        <Menu className="h-5 w-5 text-white" />
+      </button>
+
+      {sidebarCollapsed && (
+        <button
+          onClick={toggleSidebarCollapse}
+          className="fixed top-4 left-20 z-30 hidden lg:flex p-2 bg-[#211A40]/95 backdrop-blur-lg rounded-lg shadow-lg border border-white/20 hover:bg-[#211A40] transition-all duration-200"
+          title="Expandir sidebar"
+        >
+          <ChevronRight className="h-4 w-4 text-white" />
+        </button>
+      )}
+    </>
   );
 };
